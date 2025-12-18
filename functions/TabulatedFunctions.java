@@ -105,6 +105,18 @@ public class TabulatedFunctions {
         return createTabulatedFunction(points);
     }
 
+    public static TabulatedFunction inputTabulatedFunction(Class<? extends TabulatedFunction> functionClass, InputStream in) throws IOException {
+        DataInputStream dataIn = new DataInputStream(in);
+
+        int pointsCount = dataIn.readInt();
+
+        FunctionPoint[] points = new FunctionPoint[pointsCount];
+
+        for (int i = 0; i < pointsCount; ++i) points[i] = new FunctionPoint(dataIn.readDouble(), dataIn.readDouble());
+
+        return createTabulatedFunction(functionClass, points);
+    }
+
     public static void writeTabulatedFunction(TabulatedFunction function, Writer out) throws IOException {
         PrintWriter writer = new PrintWriter(new BufferedWriter(out));
 
@@ -137,5 +149,26 @@ public class TabulatedFunctions {
         }
 
         return createTabulatedFunction(points);
+    }
+
+    public static TabulatedFunction readTabulatedFunction(Class<? extends TabulatedFunction> functionClass, Reader in) throws IOException {
+        StreamTokenizer tokenizer = new StreamTokenizer(in);
+
+        tokenizer.nextToken();
+
+        int pointsCount = (int)tokenizer.nval;
+
+        double x, y;
+        FunctionPoint points[] = new FunctionPoint[pointsCount];
+
+        for(int i = 0; i < pointsCount; ++i){
+            tokenizer.nextToken();
+            x = tokenizer.nval;
+            tokenizer.nextToken();
+            y = tokenizer.nval;
+            points[i] = new FunctionPoint(x, y);
+        }
+
+        return createTabulatedFunction(functionClass, points);
     }
 }
